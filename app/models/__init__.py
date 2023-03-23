@@ -1,12 +1,5 @@
-from gino import Gino
+from base import Base
+from transaction import Transaction, TransactionType
+from user import User
 
-db = Gino()
-
-
-class User(db.Model):
-    balance = db.Column(...)
-    ...
-
-
-class Transaction(db.Model):
-    ...
+__all__ = ["Base", "Transaction", "TransactionType", "User"]
