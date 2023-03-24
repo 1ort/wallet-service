@@ -1,23 +1,24 @@
 from aiohttp import web
-from models_schema import api_db as db
 
-app = web.Application()
-app['db'] = db
+from app.api import add_routes
+from app.config import Config
+from app.service import UserService, WalletService
+from app.startups.database import get_database_session
+
+config = Config()
 
 
 def init_app() -> web.Application:
-    from .config import Config
-    from .cleanups import close_db
-    from .startups import init_db
-    from app.api.routes import add_routes
-
-    app['config'] = Config
-
-    # Startups
-    app.on_startup.append(init_db)
-
-    # Cleanups
-    app.on_cleanup.append(close_db)
-    add_routes(app)
-
+    app = web.Application()
+    app["config"] = config
+    app.on_startup.append(on_startup)
     return app
+
+
+async def on_startup(app: web.Application):
+    session = await get_database_session(config)
+    # app["db_session"] = session
+    user_service = UserService(session)
+
+    wallet_service = WalletService(session)
+    add_routes(app, user_service, wallet_service)

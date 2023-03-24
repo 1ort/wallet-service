@@ -6,7 +6,6 @@ from app.app import init_app
 
 def create_app() -> web.Application:
     app = init_app()
-
     return app
 
 

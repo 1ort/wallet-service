@@ -1,5 +1,10 @@
-from aiohttp import web
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
+
+from app.config import Config
 
 
-async def init_db(app: web.Application):
-    await app['db'].set_bind(app['config'].DATABASE_URI)
+async def get_database_session(config: Config) -> async_sessionmaker[AsyncSession]:
+    engine = create_async_engine(config.DATABASE_URI)
+    session = async_sessionmaker(engine)
+    return session
